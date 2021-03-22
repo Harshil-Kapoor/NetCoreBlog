@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 namespace ExploreCalifornia.Controllers
 {
     [Route("Home")]
-    public class HomeController
+    public class HomeController : Controller
     {
         [HttpGet("Index")]
-        public string Index()
+        public IActionResult Index()
         {
-            return "Index action";
+            return View();
         }
     }
 }
