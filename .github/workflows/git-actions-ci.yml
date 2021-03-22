@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  restore-build:
+  restore:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -17,10 +17,15 @@ jobs:
         dotnet-version: 5.0.x
     - name: Restore dependencies
       run: dotnet restore
+  build:
+    needs: restore
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore  
   test:
-    needs: restore-build
+    needs: build
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
