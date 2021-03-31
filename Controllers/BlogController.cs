@@ -19,9 +19,31 @@ namespace ExploreCalifornia.Controllers
 
         [HttpGet("")]
         [HttpGet("index")]
-        public IActionResult Index()
+        public IActionResult Index(int page = 0)
         {
-            var posts = this._db.Posts.OrderByDescending(p => p.Posted).Take(5).ToArray();
+            double pageSize = 2d;
+            double totalPosts = _db.Posts.Count();
+            double pages = totalPosts / pageSize;
+            int totalPages = (int)Math.Ceiling(pages);
+            int previousPage = page - 1;
+            int nextPage = page + 1;
+
+            ViewBag.PreviousPage = previousPage;
+            ViewBag.HasPreviousPage = previousPage >= 0;
+            ViewBag.NextPage = nextPage;
+            ViewBag.HasNextPage = nextPage < totalPages;
+
+            var posts = _db.Posts
+                .OrderByDescending(x => x.Posted)
+                .Skip((int)(pageSize * page))
+                .Take((int)pageSize)
+                .ToArray();
+
+            if(Request.Headers["X-Requested-with"] == "XMLHttpRequest")
+            {
+                return PartialView(posts);
+            }
+
             return View(posts);
         }
 
@@ -29,7 +51,7 @@ namespace ExploreCalifornia.Controllers
         public IActionResult Post(int year, int month, string key)
         {
             var post = this._db.Posts.FirstOrDefault(p => p.Key == key);
-            return View(post);
+            return PartialView(post);
         }
 
         [HttpGet("create")]
